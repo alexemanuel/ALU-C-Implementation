@@ -4,6 +4,7 @@
 
 
 #define WORDLENGTH 5
+#define WORDFLAGLENGTH 3
 
 struct flags {
 	unsigned int zeroFlag : 1;
@@ -12,6 +13,8 @@ struct flags {
 }statusFlags;
 
 enum operationCodes {ADD, SUB, AND, OR, NOR, SLT, XOR};
+
+int i;
 
 int halfAdder(int bitA, int bitB, int *carryOut);
 
@@ -35,7 +38,7 @@ void slt(int binaryA[], int binaryB[], int *result);
 
 void invert(int binary[], int *result);
 
-void getBinaryFromFile(FILE* file, char* binaryArray);
+void getBinaryFromFile(FILE* file, char* binaryArray, int wordlength);
 
 int binaryToDecimal(char binary[]);
 
@@ -55,15 +58,15 @@ int main()
 	}
 
 	char binarya[WORDLENGTH], binaryb[WORDLENGTH];
-	getBinaryFromFile(pointerInputFile, binarya);
-	getBinaryFromFile(pointerInputFile, binaryb);
+	getBinaryFromFile(pointerInputFile, binarya,WORDLENGTH);
+	getBinaryFromFile(pointerInputFile, binaryb,WORDLENGTH);
 
 	int binaryA[WORDLENGTH], binaryB[WORDLENGTH];
 	binaryToDecimalArray(binarya, binaryA);
 	binaryToDecimalArray(binaryb, binaryB);
 
-	char binaryOp[WORDLENGTH]; 
-	getBinaryFromFile(pointerInputFile, binaryOp);
+	char binaryOp[WORDFLAGLENGTH]; 
+	getBinaryFromFile(pointerInputFile, binaryOp,WORDFLAGLENGTH);
 	int opCode = binaryToDecimal(binaryOp);
 
 	int binaryResult[] = {0, 0, 0, 0, 0};
@@ -106,16 +109,16 @@ int main()
 }
 
 void printResult(int binaryOutput[])
-{
+{	
 	printf("===================================\n");
 	printf("Output Binary: ");
 	
-	for(int i = 0; i < WORDLENGTH; i++){
+	for(i = 0; i < WORDLENGTH; i++){
 		printf("%d", binaryOutput[i]);
 	}
 
 	printf("\n");
-
+	
 	printf("Flags:\n");
 	printf("Zero Flag     %d\n", statusFlags.zeroFlag);
 	printf("OverFlow Flag %d\n", statusFlags.overflowFlag);
@@ -125,8 +128,9 @@ void printResult(int binaryOutput[])
 
 
 void binaryToDecimalArray(char binaryString[], int *binaryDecimalArray)
-{
-	for(int i = WORDLENGTH - 1; i >= 0; i--){
+{	
+	
+	for(i = WORDLENGTH - 1; i >= 0; i--){
 		binaryDecimalArray[i] = binaryString[i] == '1';
 	}
 }
@@ -135,17 +139,17 @@ void binaryToDecimalArray(char binaryString[], int *binaryDecimalArray)
 int binaryToDecimal(char binary[])
 {
 	int decimal = 0;
-
-	for(int i = WORDLENGTH -1; i >= 0; i--){
-		decimal += pow(2, WORDLENGTH - 1 - i) * (binary[i] == '1');
+	
+	for(i = WORDFLAGLENGTH -1; i >= 0; i--){
+		decimal += pow(2, WORDFLAGLENGTH - 1 - i) * (binary[i] == '1');
 	}
 	return decimal;
 }
 
 
-void getBinaryFromFile(FILE *file, char *binaryArray) 
+void getBinaryFromFile(FILE *file, char *binaryArray, int wordlength) 
 {
-	fgets(binaryArray, WORDLENGTH + 1, file);
+	fgets(binaryArray, wordlength + 1, file);
 	fgetc(file); //Skip blank space
 }
 
@@ -159,21 +163,25 @@ void slt(int binaryA[], int binaryB[], int *result)
 }
 
 
-void checkZeroResult(int binary[]){
+void checkZeroResult(int binary[])
+{
 	int isZero = 0;
+	
 
-	for(int i = WORDLENGTH - 1; i >= 0; i--){
+	for(i = WORDLENGTH - 1; i >= 0; i--){
 		isZero |= binary[i] | binary[i + 1]; 
 	}
 	statusFlags.zeroFlag = !isZero;
 }
 
 
-void add(int binaryA[], int binaryB[], int *result){
+void add(int binaryA[], int binaryB[], int *result)
+{
 	int carryIn  = 0;	
 	int carryOut = 0;
+	
 
-	for(int i = WORDLENGTH - 1; i >= 0; i--){
+	for(i = WORDLENGTH - 1; i >= 0; i--){
 		carryIn = carryOut;
 		result[i] = fullAdder(binaryA[i], binaryB[i], carryIn, &carryOut);
 	}
@@ -223,7 +231,8 @@ void sub(int binaryA[], int binaryB[], int *result)
 
 void and(int binaryA[], int binaryB[], int *result)
 {
-	for(int i = WORDLENGTH - 1; i >= 0; i--){
+
+	for(i = WORDLENGTH - 1; i >= 0; i--){
 		result[i] = binaryA[i] & binaryB[i]; 
 	}
 }
@@ -231,7 +240,8 @@ void and(int binaryA[], int binaryB[], int *result)
 
 void or(int binaryA[], int binaryB[], int *result)
 {
-	for(int i = WORDLENGTH - 1; i >= 0; i--){
+
+	for(i = WORDLENGTH - 1; i >= 0; i--){
 		result[i] = binaryA[i] | binaryB[i]; 
 	}
 }
@@ -246,9 +256,10 @@ void nor(int binaryA[], int binaryB[], int *result)
 }
 
 
-void invert(int binary[], int *result){
-	
-	for(int i = WORDLENGTH - 1; i >= 0; i--){
+void invert(int binary[], int *result)
+{
+
+	for(i = WORDLENGTH - 1; i >= 0; i--){
 		result[i] = binary[i] ^ 1; 
 	}	
 }
@@ -256,7 +267,8 @@ void invert(int binary[], int *result){
 
 void xor(int binaryA[], int binaryB[], int *result)
 {
-	for(int i = WORDLENGTH - 1; i >= 0; i--){
+	
+	for(i = WORDLENGTH - 1; i >= 0; i--){
 		result[i] = binaryA[i] ^ binaryB[i]; 
 	}
 }
