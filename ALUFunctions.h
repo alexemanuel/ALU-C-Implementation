@@ -1,5 +1,5 @@
-#define WORDLENGTH 32
-#define WORDFLAGLENGTH 3
+#define WORD_LENGTH 32
+#define WORD_OPTION_LENGTH 3
 
 
 typedef struct {

@@ -7,12 +7,27 @@
 flags statusFlags = {0, 0, 0};
 
 
-void slt(int binaryArrayA[], int binaryArrayB[], int *result)
+void slt(int binaryArrayA[], int binaryArrayB[], int *binaryArrayResult)
 {
-	int subtractResult[WORDLENGTH];
+	int isLessThan;
+	int i;
 
-	sub(binaryArrayA, binaryArrayB, subtractResult);
-	result[WORDLENGTH - 1] = subtractResult[0] | statusFlags.overflowFlag;
+	// Check if the signal bits (most significant) are different
+	if(binaryArrayA[0] ^ binaryArrayB[0]){
+		// If the most significant bit of A is 1, it means that A is less than B
+		isLessThan = binaryArrayA[0];
+		
+	}else{
+		// Start in the next bit after the signal bit
+		for(i  = 1; i < WORD_LENGTH; i++){
+			if(binaryArrayA[i] ^ binaryArrayB[i]){
+				isLessThan = !binaryArrayA[i];
+				break;
+			}
+		}
+	}
+	// Put the isLessThan value in the least significant bit, returning 0 or 1
+	binaryArrayResult[WORD_LENGTH - 1] = isLessThan; 
 }
 
 
@@ -21,22 +36,25 @@ void checkZeroResult(int binary[])
 	int isZero = 0;
 	int i;
 
-	for(i = WORDLENGTH - 1; i >= 0; i--){
+	for(i = WORD_LENGTH - 1; i >= 0; i--){
+		// Compare the current bit with the next bit
 		isZero |= binary[i] | binary[i + 1]; 
 	}
+	// If all the bits are igual to zero, then zeroFlag is true
 	statusFlags.zeroFlag = !isZero;
 }
 
 
-void add(int binaryArrayA[], int binaryArrayB[], int *result)
+void add(int binaryArrayA[], int binaryArrayB[], int *binaryArrayResult)
 {
 	int carryIn  = 0;	
 	int carryOut = 0;
 	int i;	
 
-	for(i = WORDLENGTH - 1; i >= 0; i--){
+	for(i = WORD_LENGTH - 1; i >= 0; i--){
+		// The next carryIn is the previous carryOut
 		carryIn = carryOut;
-		result[i] = fullAdder(binaryArrayA[i], binaryArrayB[i], carryIn, &carryOut);
+		binaryArrayResult[i] = fullAdder(binaryArrayA[i], binaryArrayB[i], carryIn, &carryOut);
 	}
 
 	statusFlags.overflowFlag = carryIn | carryOut;
@@ -67,71 +85,72 @@ int fullAdder(int bitA, int bitB, int carryIn, int *carryOut)
 }
 
 
-void sub(int binaryArrayA[], int binaryArrayB[], int *result)
+void sub(int binaryArrayA[], int binaryArrayB[], int *binaryArrayResult)
 {
-	int invertedB[WORDLENGTH];
-	int negativeB[WORDLENGTH];
+	int invertedBinaryB[WORD_LENGTH];
+	int negativeBinaryB[WORD_LENGTH];
 	
 	// Represent the value 1 in binary
-	int binaryArray1[WORDLENGTH];
-	decimalToBinaryArray(WORDLENGTH - 1, 1, binaryArray1);
+	int binaryArray1[WORD_LENGTH];
+	decimalToBinaryArray(WORD_LENGTH - 1, 1, binaryArray1);
 
-	// Tow's Complemenlt: First invert the second binary, then add 1
-	invert(binaryArrayB, invertedB);
-	add(invertedB, binaryArray1, negativeB); 
+	// Tow's Complemenlt: First invert the second binary, then add 1 to it
+	invert(binaryArrayB, invertedBinaryB);
+	add(invertedBinaryB, binaryArray1, negativeBinaryB); 
 	
-	add(binaryArrayA, negativeB, result);	
+	add(binaryArrayA, negativeBinaryB, binaryArrayResult);	
 }
 
 
-void and(int binaryArrayA[], int binaryArrayB[], int *result)
+void and(int binaryArrayA[], int binaryArrayB[], int *binaryArrayResult)
 {
 	int i;	
 
-	for(i = WORDLENGTH - 1; i >= 0; i--){
-		result[i] = binaryArrayA[i] & binaryArrayB[i]; 
+	for(i = WORD_LENGTH - 1; i >= 0; i--){
+		binaryArrayResult[i] = binaryArrayA[i] & binaryArrayB[i]; 
 	}
 }
 
 
-void or(int binaryArrayA[], int binaryArrayB[], int *result)
+void or(int binaryArrayA[], int binaryArrayB[], int *binaryArrayResult)
 {
 	int i;	
 
-	for(i = WORDLENGTH - 1; i >= 0; i--){
-		result[i] = binaryArrayA[i] | binaryArrayB[i]; 
+	for(i = WORD_LENGTH - 1; i >= 0; i--){
+		binaryArrayResult[i] = binaryArrayA[i] | binaryArrayB[i]; 
 	}
 }
 
 
-void nor(int binaryArrayA[], int binaryArrayB[], int *result)
+void nor(int binaryArrayA[], int binaryArrayB[], int *binaryArrayResult)
 {
-	int orResult[WORDLENGTH];
+	int orBinaryArrayResult[WORD_LENGTH];
 
 	// First make OR, then invert the result 
-	or(binaryArrayA, binaryArrayB, orResult);
-	invert(orResult, result);
+	or(binaryArrayA, binaryArrayB, orBinaryArrayResult);
+	invert(orBinaryArrayResult, binaryArrayResult);
 }
 
 
-void invert(int binary[], int *result)
+void invert(int binaryArray[], int *binaryArrayResult)
 {
 	int i;	
 
-	for(i = WORDLENGTH - 1; i >= 0; i--){
-		result[i] = binary[i] ^ 1; 
+	for(i = WORD_LENGTH - 1; i >= 0; i--){
+		binaryArrayResult[i] = binaryArray[i] ^ 1; 
 	}	
 }
 
 
-void xor(int binaryArrayA[], int binaryArrayB[], int *result)
+void xor(int binaryArrayA[], int binaryArrayB[], int *binaryArrayResult)
 {
 	int i;	
 	
-	for(i = WORDLENGTH - 1; i >= 0; i--){
-		result[i] = binaryArrayA[i] ^ binaryArrayB[i]; 
+	for(i = WORD_LENGTH - 1; i >= 0; i--){
+		binaryArrayResult[i] = binaryArrayA[i] ^ binaryArrayB[i]; 
 	}
 }
+
 
 flags getStatusFlags()
 {

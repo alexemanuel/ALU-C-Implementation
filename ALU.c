@@ -8,30 +8,32 @@ char operaions[7][4] = {"add", "sub", "AND", "OR", "NOR", "slt", "XOR"};
 
 int main()
 {
-	FILE *pointerInputFile;
-	pointerInputFile = fopen("inputs.txt", "r");
+	FILE *ptrInputFile;
+	ptrInputFile = fopen("inputs.txt", "r");
 
-	if(pointerInputFile == NULL){
+	if(ptrInputFile == NULL){
 		printf("Can not open the file");
 		return 1;
 	}
 
-	char binaryStringA[WORDLENGTH], binaryStringB[WORDLENGTH];
-	getBinaryFromFile(pointerInputFile, binaryStringA, WORDLENGTH);
-	getBinaryFromFile(pointerInputFile, binaryStringB, WORDLENGTH);
+	// Get the 32-bit value from the file.
+	char binaryStringA[WORD_LENGTH], binaryStringB[WORD_LENGTH];
+	getBinaryStringFromFile(ptrInputFile, binaryStringA, WORD_LENGTH);
+	getBinaryStringFromFile(ptrInputFile, binaryStringB, WORD_LENGTH);
 
-	int binaryArrayA[WORDLENGTH], binaryArrayB[WORDLENGTH];
-	binaryToDecimalArray(binaryStringA, binaryArrayA);
-	binaryToDecimalArray(binaryStringB, binaryArrayB);
+	// Transform the char array into int array 
+	int binaryArrayA[WORD_LENGTH], binaryArrayB[WORD_LENGTH];
+	binaryStringToBinaryArray(binaryStringA, binaryArrayA);
+	binaryStringToBinaryArray(binaryStringB, binaryArrayB);
 
-	char binaryOp[WORDFLAGLENGTH]; 
-	getBinaryFromFile(pointerInputFile, binaryOp, WORDFLAGLENGTH);
-	int opCode = binaryToDecimal(binaryOp);
+	char binaryOperation[WORD_OPTION_LENGTH]; 
+	getBinaryStringFromFile(ptrInputFile, binaryOperation, WORD_OPTION_LENGTH);
+	int operationCode = binaryStringToDecimal(binaryOperation);
 
-	int binaryResult[WORDLENGTH];
-	decimalToBinaryArray(WORDLENGTH - 1, 0, binaryResult);
+	int binaryResult[WORD_LENGTH];
+	decimalToBinaryArray(WORD_LENGTH - 1, 0, binaryResult);
 
-	switch(opCode){
+	switch(operationCode){
 
 		case ADD:
 			add(binaryArrayA, binaryArrayB, binaryResult);
@@ -60,12 +62,16 @@ int main()
 		case XOR:
 			xor(binaryArrayA, binaryArrayB, binaryResult);
 			break;
+
+		default:
+			printf("Invalid Operation\n");
+			return 0;
 	}
 	
 	checkZeroResult(binaryResult);
 
 	flags statusFlags = getStatusFlags();
-	printResult(binaryArrayA, binaryArrayB, binaryResult, operaions[opCode], statusFlags);
+	printResult(binaryArrayA, binaryArrayB, binaryResult, operaions[operationCode], statusFlags);
 	
 	return 0;
 }

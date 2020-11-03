@@ -6,7 +6,7 @@
 
 void printResult(int binaryArrayA[], int binaryArrayB[], int binaryOutput[], char *operation, flags statusFlags)
 {	
-	printf("===================================\n");
+	printf("==========================================================\n");
 
 	printf("Binary A:  ");	
 	printBinaryArray(binaryArrayA);
@@ -24,7 +24,7 @@ void printResult(int binaryArrayA[], int binaryArrayB[], int binaryOutput[], cha
 	printf("Zero Flag     %d\n", statusFlags.zeroFlag);
 	printf("OverFlow Flag %d\n", statusFlags.overflowFlag);
 	printf("Carry Flag    %d\n", statusFlags.carryFlag);
-	printf("===================================\n");
+	printf("===========================================================\n");
 }
 
 
@@ -32,7 +32,7 @@ void printBinaryArray(int binaryArray[])
 {
 	int i;
 
-	for(i = 0; i < WORDLENGTH; i++){
+	for(i = 0; i < WORD_LENGTH; i++){
 		printf("%d", binaryArray[i]);
 	}
 	printf("\n");
@@ -48,32 +48,32 @@ void decimalToBinaryArray(int index, int num, int *array)
 }
 
 
-void binaryToDecimalArray(char binaryString[], int *binaryDecimalArray)
+void binaryStringToBinaryArray(char binaryString[], int *binaryArray)
 {	
 	int i;
 	
-	for(i = WORDLENGTH - 1; i >= 0; i--){
-		binaryDecimalArray[i] = binaryString[i] == '1';
+	for(i = WORD_LENGTH - 1; i >= 0; i--){
+		binaryArray[i] = binaryString[i] == '1';
 	}
 }
 
 
-int binaryToDecimal(char binaryArray[])
+int binaryStringToDecimal(char binaryString[])
 {
 	int decimal = 0;
 	int i;
 	
-	for(i = WORDFLAGLENGTH -1; i >= 0; i--){
-		decimal += pow(2, WORDFLAGLENGTH - 1 - i) * (binaryArray[i] == '1');
+	for(i = WORD_OPTION_LENGTH -1; i >= 0; i--){
+		decimal += pow(2, WORD_OPTION_LENGTH - 1 - i) * (binaryString[i] == '1');
 	}
 	return decimal;
 }
 
 
-void getBinaryFromFile(FILE *file, char *binaryArrayArray, int wordlength) 
+void getBinaryStringFromFile(FILE *ptrFile, char *binaryString, int wordLength)
 {
-	fgets(binaryArrayArray, wordlength + 1, file);
-	fgetc(file); //Skip blank space
+	fgets(binaryString, wordLength + 1, ptrFile);
+	fgetc(ptrFile); //Skip blank space
 }
 
 

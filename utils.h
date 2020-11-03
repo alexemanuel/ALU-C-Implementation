@@ -1,12 +1,12 @@
-#define WORDLENGTH 32
-#define WORDFLAGLENGTH 3
+#define WORD_LENGTH 32
+#define WORD_OPTION_LENGTH 3
 
 
-void getBinaryFromFile(FILE* file, char* binaryArrayArray, int wordlength);
+void getBinaryStringFromFile(FILE *ptrFile, char *binaryString, int wordLength);
 
-int binaryToDecimal(char binaryArray[]);
+int binaryStringToDecimal(char binaryArray[]);
 
-void binaryToDecimalArray(char binaryArray[], int *binaryDecimalArray);
+void binaryStringToBinaryArray(char binaryString[], int *binaryArray);
 
 void printResult(int binaryArrayA[], int binaryArrayB[], int binaryArrayOutput[], char *operation, flags statusFlags);
 
